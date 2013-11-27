@@ -4,7 +4,7 @@
 
 Clone this application from the Github repository:
 ```bash
-$ git clone export CURATE_APP="$DAM/curate_app"
+$ git clone git@github.com:nomadicoder/curate_app.git
 ```
 
 Install the applicable ruby gems:
@@ -50,6 +50,4 @@ $ rails s
 When the rails server has started, visit 0.0.0.0:3000 and you're ready to go.
 
 ## Customization
-
-* Make styling customizations in app/assets/stylesheets/locale.css.scss
 
