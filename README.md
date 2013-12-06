@@ -18,6 +18,12 @@ Then generate the curate files
 $ rails generate curate
 ```
 
+For:
+```
+Overwrite config/initializers/curate_config.rb? (enter "h" for help) [Ynaqdh]
+```
+Answer 'n'
+
 The Curate generator overwrites the route and configuration files. Put them back the way they were when you cloned the curate_app repostiory
 ```bash
 $ git checkout -- config/routes.rb app/controllers/application_controller.rb
