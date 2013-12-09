@@ -10,7 +10,7 @@ Curate.configure do |config|
   # config.default_antivirus_instance = lambda {|filename| … }
 
   # # Used for constructing permanent URLs
-  config.application_root_url = 'https://0.0.0.0:3000/'
+  config.application_root_url = 'https://repository.nomadicoder.com/'
 
   # # Override the file characterization runner that is used
   # config.characterization_runner = lambda {|filename| … }
