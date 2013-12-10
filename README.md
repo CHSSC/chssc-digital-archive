@@ -4,7 +4,7 @@
 
 Clone this application from the Github repository:
 ```bash
-$ git clone git@github.com:nomadicoder/curate_app.git
+$ git clone git@github.com:CHSSC/chssc-digital-archive.git
 ```
 
 Install the applicable ruby gems:
