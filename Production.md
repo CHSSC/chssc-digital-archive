@@ -38,7 +38,7 @@ Log onto the Vagrant server
 Update and install dependencies
 
     $ sudo apt-get update
-    $ sudo apt-get install build-essential zlib1g-dev git-core sqlite3 libsqlite3-dev libtool libyaml-dev curl unzip 
+    $ sudo apt-get install build-essential zlib1g-dev git-core sqlite3 libsqlite3-dev libtool libyaml-dev curl unzip python-software-properties
     $ sudo apt-get install openjdk-7-jre
     $ sudo apt-get install mysql-server
     # prepare a root password for mysql
@@ -199,3 +199,14 @@ Start resque on startup
     $ cd /srv/chssc-digital-archive
     $ sudo gem install foreman
     $ sudo foreman export upstart /etc/init --user steven
+
+Install Nginx
+
+    $ sudo add-apt-repository ppa:nginx/stable
+    $ sudo apt-get update && apt-get install nginx
+    $ cd /etc/nginx/sites-enabled
+    $ sudo rm default
+    $ sudo ln -s /srv/chssc-digital-archive/config/nginx.conf archive
+    $ sudo service nginx restart
+
+Test Nginx installation. Visit a known page in the rails application's public directory by visitng http://<site>/404.html or 500.html
