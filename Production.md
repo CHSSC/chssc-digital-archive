@@ -210,3 +210,7 @@ Install Nginx
     $ sudo service nginx restart
 
 Test Nginx installation. Visit a known page in the rails application's public directory by visitng http://<site>/404.html or 500.html
+
+Configure Unicorn
+
+    $ bundle exec unicorn -c config/unicorn.rb -D
