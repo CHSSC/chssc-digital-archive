@@ -213,6 +213,7 @@ Test Nginx installation. Visit a known page in the rails application's public di
 
 Configure Unicorn
 
+    $ cd /srv/chssc-digital-archive
     $ bundle exec unicorn -c config/unicorn.rb -D
 
 Get and customize the Unicorn init shell script
@@ -222,3 +223,25 @@ Get and customize the Unicorn init shell script
 Add Unicorn to bin directory
 
     $ bundle binstubs unicorn
+
+Customize the config/unicorn_init.sh to conform to your production server setup. Make sure it's executable
+
+    $ chmod +x config/unicorn_init.sh
+
+Add it to init.d:
+
+    $ sudo ln -s /srv/chssc-digital-archive/config/unicorn_init.sh /etc/init.d/unicorn
+
+Start nginx and unicorn
+
+    $ sudo service nginx restart
+    $ sudo service unicorn restart
+
+If necessary start fedora server. If in development,
+
+   $ rake jetty:start
+
+Verify connection to services.
+
+Reboot system
+
