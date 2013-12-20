@@ -214,3 +214,11 @@ Test Nginx installation. Visit a known page in the rails application's public di
 Configure Unicorn
 
     $ bundle exec unicorn -c config/unicorn.rb -D
+
+Get and customize the Unicorn init shell script
+
+    $ wget --no-check-certificate https://github.com/defunkt/unicorn/raw/master/examples/init.sh -O unicorn_init.sh
+
+Add Unicorn to bin directory
+
+    $ bundle binstubs unicorn
