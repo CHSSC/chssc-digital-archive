@@ -245,3 +245,60 @@ Verify connection to services.
 
 Reboot system
 
+## Install Production Fedora
+
+Follow [Fedora installation instructions](https://wiki.duraspace.org/display/FEDORA37/Installation+and+Configuration)
+
+Remember to use a more secure password for MySQL and Fedora server admin accounts
+
+Tomcat server is accessible at [http://localhost:8080/](http://localhost:8080/)
+Fedora server is accessible at [http://localhost:8080/fedora](http://localhost:8080/fedora)
+Solr server is accessible at [http://localhost:8080/solr](http://localhost:8080/solr)
+
+## Prepare system for fedora server
+
+### Modify linux environment
+
+Edit `/etc/environment`. Prepend the path to Fedora executables to the PATH and add the Fedora environment variables:
+
+    PATH="/usr/local/fedora/server/bin:usr/local/fedora/client/bin:[original path]"
+    FEDORA_HOME="/usr/local/fedora"
+    CATALINA_HOME="$FEDORA_HOME:tomcat"
+
+Log back into server and start up production Fedora server
+
+    $ CATALINE_HOME/bin/startup.sh
+
+Visit `http://localhost:8080/fedora` and verify "Fedora Repository Information View"
+
+### Run production Rails server
+
+    $ rails server -e production
+
+### Install Solr
+
+Download the latest version of Solr
+
+    $ cd $HOME
+    $ wget http://mirrors.ibiblio.org/apache/lucene/solr/4.6.0/solr-4.6.0.tgz
+    $ tar -zxf solr-4.6.0.tgz
+    $ cd solr-4.6.0
+    $ sudo ln -s $HOME/solr-4.6.0/example/solr /srv/bl_solr
+    $ mkdir -p /var/bl_solr/data
+    $ mkdir /srv/bl_solr/conf
+    $ echo '<dataDir>${solr.data.dir:/var/bl_solr/fedora/data}</dataDir>' >> /srv/bl_solr/conf/solrconfig.xml
+
+Edit `/etc/environment`. add `-Dsolr.solr.home=/srv/solr` to JAVA_OPTS, e.g.:
+
+    JAVA_OPTS="-Dsolr.solr.home=/srv/solr"
+
+Create a Tomcat Context fragment to point docBase to the $SOLR_HOME/solr.war file and solr/home to $SOLR_HOME
+
+    <?xml version="1.0" encoding="utf-8"?>
+    <Context docBase="/srv/bl_solr/solr.war" debug="0" crossContext="true">
+      <Environment name="bl_solr/home" type="java.lang.String" value="/bl_srv/solr" override="true"/>
+    </Context>
+
+Add the Solr libraries to Tomcat
+
+    cp $HOME/solr-4.6.0/example/lib/ext/* $CATALINA_HOME/lib
