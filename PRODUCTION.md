@@ -161,6 +161,7 @@ Install as production
 ---------------------
 
 Go to the redis build directory
+
     $ cd /usr/local/src/redis-2.8.3
     $ cd utils/
     $ sudo ./install_server.sh
