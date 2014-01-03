@@ -107,7 +107,7 @@ From /opt
 
     $ sudo wget https://fits.googlecode.com/files/fits-0.6.2.zip
     $ sudo unzip fits-0.6.2.zip
-    $ cd fits
+    $ cd fits-0.6.2
     $ sudo chmod +x fits.sh
 
 # Install redis
