@@ -150,10 +150,12 @@ Install rails application
     $ rails g hydra:jetty
 
 Start Resque
+
     $ sudo redis-server &
     $ sudo QUEUE=* rake environment resque:work &
 
 Start rails application
+
     $ rails s &
 
 
