@@ -1,55 +1,39 @@
-Vagrant Curate Server
-=====================
+CHSSC Digital Archive Installation Instructions
+===============================================
 
-Create Vagrant Work Area
+# Prerequisite
 
-    $ mkdir vagrant
-    $ cd vagrant
+* Install Ubuntu 12.07 LTS
+* Create deployer user
+* Log on as deployer
+
+*Need to add instructions to use Curate in Git*
 
 Clone Curate App
 
     $ git clone git@github.com:CHSSC/chssc-digital-archive.git
     $ cd chssc-digital-archive
 
-Make this a vagrant work area
-
-    $ vagrant init precise64
-
-Update the Vagrantfile configuration.  Add access to Fedora and Rails ports
-
-    config.vm.network :forwarded_port, guest: 3000, host: 3000
-    config.vm.network :forwarded_port, guest: 8993, host: 8983
-
-Update .git.info.exclude (don't want to include development environment specific files)
-
-    $ echo "Vagrantfile" >> .git.info.exclude
-    $ echo ".ruby-version" >> .git.info.exclude
-    $ echo ".ruby-gemset" >> .git.info.exclude
-    $ echo "*.swp" >> .git.info.exclude
-
-Start up the Vagrant server
-
-    $ vagrant up
-
-Log onto the Vagrant server
-
-    $ vagrant ssh
+# System Dependencies
 
 Update and install dependencies
 
     $ sudo apt-get update
-    $ sudo apt-get install build-essential zlib1g-dev git-core sqlite3 libsqlite3-dev libtool libyaml-dev curl unzip python-software-properties
-    $ sudo apt-get install openjdk-7-jre
+    $ sudo apt-get -y install build-essential zlib1g-dev libtool libyaml-dev curl unzip python-software-properties
+    $ sudo apt-get -y install git-core sqlite3 libsqlite3-dev libxslt-dev libxml2-dev nodejs
+    $ sudo apt-get -y install openjdk-7-jre
     $ sudo apt-get install mysql-server
     # prepare a root password for mysql
-    $ sudo apt-get install nodejs
 
+# Install transcoders
 
-
-Install transcoders
+Install image transcoders
 
     $ sudo apt-get install imagemagick
     $ sudo apt-get install graphicsmagick-libmagick-dev-compat
+
+Install video transcoders. This section is *TBD*
+
     $ sudo apt-get -y install autoconf automake build-essential git libass-dev libgpac-dev \
     libsdl1.2-dev libtheora-dev libtool libva-dev libvdpau-dev libvorbis-dev libx11-dev \
     libxext-dev libxfixes-dev pkg-config texi2html zlib1g-dev
@@ -70,18 +54,17 @@ Install transcoders
     sudo hash -r
     . ~/.profile
 
+# Install latest Ruby
 
 Install and configure RVM
 
     $ \curl -sSL https://get.rvm.io | bash -s stable --ruby
-    $ source /home/vagrant/.rvm/scripts/rvm
+    $ source $HOME/.rvm/scripts/rvm
     $ rvm gemset create curate
-    $ cd /vagrant
-    $ rvm use 2.0.0@curate --default
 
 Or Install Ruby
 
-    $ cd /vagrant
+    $ cd $HOME
     $ mkdir build
     $ cd build
     $ wget http://cache.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p353.tar.gz
@@ -89,28 +72,25 @@ Or Install Ruby
     $ cd ruby-2.0.0-p353
     $ ./configure
     $ make
-    $ make test
     $ sudo make install
 
 Install bundler
 
     $ sudo gem install bundler
 
-Complete Curate installation
+# Install Sufia dependencies
 
-Install Sufia dependencies
+## Install fits.sh
 
-# Install fits.sh
 Download the latest version from https://code.google.com/p/fits/downloads/list. In the example below for fits-0.6.2
 
-From /opt
-
+    $ cd /opt
     $ sudo wget https://fits.googlecode.com/files/fits-0.6.2.zip
     $ sudo unzip fits-0.6.2.zip
     $ cd fits-0.6.2
     $ sudo chmod +x fits.sh
 
-# Install redis
+## Install redis
 
     $ cd /usr/local/src
     $ sudo wget http://download.redis.io/releases/redis-2.8.3.tar.gz
@@ -121,21 +101,21 @@ From /opt
     # confirm Redis is installed
     $ ls /usr/local/bin
 
-Install CHSSC Digital Archive
------------------------------
 
-    $ cd /opt
-    $ sudo wget https://github.com/CHSSC/chssc-digital-archive/archive/master.zip
-    $ sudo unzip master.zip
-    $ sudo mv chssc-digital-archive-master chssc-digital-archive
+# Install CHSSC Digital Archive
+
+    $ cd /srv
+    $ git clone https://github.com/CHSSC/chssc-digital-archive.git
     $ cd chssc-digital-archive
 
-Add Ubuntu specific gems to the gem file
+Add Ubuntu specific gems to the Gemfile
 
     gem "execjs"
     gem "therubyracer"
 
 Install the gems
+
+    $ bundle
 
 Add the following to config/initializers/sufia.rb
 
@@ -149,20 +129,18 @@ Install rails application
     $ rake db:migrate
     $ rails g hydra:jetty
 
-Start Resque
+# Run development Server
 
     $ sudo redis-server &
     $ sudo QUEUE=* rake environment resque:work &
-
-Start rails application
-
-    $ rails s &
+    $ rake jetty:start
+    $ rails server
 
 
 Install as production
 ---------------------
 
-Go to the redis build directory
+Launch Redis on startup (When prompted, use default parameters)
 
     $ cd /usr/local/src/redis-2.8.3
     $ cd utils/
@@ -180,28 +158,22 @@ Go to the redis build directory
     Please select the data directory for this instance [/var/lib/redis/6379]
     Selected default - /var/lib/redis/6379
     Please select the redis executable path [/usr/local/bin/redis-server]
-    s#^port [0-9]{4}$#port 6379#;s#^logfile .+$#logfile /var/log/redis_6379.log#;s#^dir .+$#dir /var/lib/redis/6379#;s#^pidfile .+$#pidfile /var/run/redis_6379.pid#;s#^daemonize no$#daemonize yes#;
+    ...
+
     Copied /tmp/6379.conf => /etc/init.d/redis_6379
     Installing service...
-    update-rc.d: warning: /etc/init.d/redis_6379 missing LSB information
-    update-rc.d: see <http://wiki.debian.org/LSBInitScripts>
-     Adding system startup for /etc/init.d/redis_6379 ...
-       /etc/rc0.d/K20redis_6379 -> ../init.d/redis_6379
-       /etc/rc1.d/K20redis_6379 -> ../init.d/redis_6379
-       /etc/rc6.d/K20redis_6379 -> ../init.d/redis_6379
-       /etc/rc2.d/S20redis_6379 -> ../init.d/redis_6379
-       /etc/rc3.d/S20redis_6379 -> ../init.d/redis_6379
-       /etc/rc4.d/S20redis_6379 -> ../init.d/redis_6379
-       /etc/rc5.d/S20redis_6379 -> ../init.d/redis_6379
+    
+    ...
+
     Success!
     Starting Redis server...
     Installation successful!
 
-Start resque on startup
+Launch resque on startup
 
     $ cd /srv/chssc-digital-archive
     $ sudo gem install foreman
-    $ sudo foreman export upstart /etc/init --user steven
+    $ sudo foreman export upstart /etc/init --user deployer
 
 Install Nginx
 
@@ -212,7 +184,7 @@ Install Nginx
     $ sudo ln -s /srv/chssc-digital-archive/config/nginx.conf archive
     $ sudo service nginx restart
 
-Test Nginx installation. Visit a known page in the rails application's public directory by visitng http://<site>/404.html or 500.html
+Test Nginx installation. Visit a known page in the rails application's public directory by visitng http://<site-name>/404.html or 500.html
 
 Configure Unicorn
 
@@ -240,15 +212,11 @@ Start nginx and unicorn
     $ sudo service nginx restart
     $ sudo service unicorn restart
 
-If necessary start fedora server. If in development,
+If installed, test with jetty.
 
-   $ rake jetty:start
+Reboot system, and verify all services are running
 
-Verify connection to services.
-
-Reboot system
-
-## Install Production Fedora
+# Install Production Fedora
 
 Follow [Fedora installation instructions](https://wiki.duraspace.org/display/FEDORA37/Installation+and+Configuration)
 
@@ -280,6 +248,8 @@ Visit `http://localhost:8080/fedora` and verify "Fedora Repository Information V
 
 ### Install Solr
 
+*Clean this up* - Currently installs to local deploy directory. Maybe it should go directly into /srv.
+
 Download the latest version of Solr
 
     $ cd $HOME
@@ -305,3 +275,5 @@ Create a Tomcat Context fragment to point docBase to the $SOLR_HOME/solr.war fil
 Add the Solr libraries to Tomcat
 
     cp $HOME/solr-4.6.0/example/lib/ext/* $CATALINA_HOME/lib
+
+*TBD* Launch Fedora on startup
